@@ -1,0 +1,26 @@
+name: Sync to Hugging Face Hub
+
+on:
+  push:
+    branches: [main] # or master, or whatever branch you want to sync from
+  workflow_dispatch: # Allows you to manually trigger the workflow from GitHub Actions tab
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for Git LFS if you use it
+          lfs: true # Enable LFS if your repo uses it
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }} # Reference the secret you created
+        run: |
+          git remote add space https://huggingface.co/spaces/lakshyalove4904/Book_Recommendation_System_V2
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git push --force space main # Pushes the 'main' branch to the 'main' branch of your Space
+          # If your GitHub branch is 'master' and you want to push to 'main' on HF Space:
+          # git push --force space master:main
