@@ -103,7 +103,7 @@ def recommend_books(
     for _, row in recommendations.iterrows():
         description = row["description"]
         turncated_desc_split = description.split()
-        turncated_description = " ".join(turncated_desc_split[:30]) + "..."
+        turncated_description = " ".join(turncated_desc_split[:20]) + "..."
         
         authors_split = row["authors"].split(";")
         if len(authors_split) > 1:
@@ -119,49 +119,76 @@ def recommend_books(
 
 categories = ["All"] + sorted(books["simple_categories"].dropna().unique())
 tone = ["All"] + ["Happy", "Sad", "Angry", "Surprising", "Suspenseful"]
-
-with gr.Blocks(theme = gr.themes.Glass()) as dashboard:
+with gr.Blocks(theme=gr.themes.Soft(), title="Book Recommendation Dashboard") as dashboard: # Changed theme for a softer look
     gr.Markdown(
         """
-        # Book Recommendation Dashboard
-        Find your next favorite book based on your mood and interests!
+        # 📚 Find Your Next Literary Adventure!
+        Discover amazing books tailored to your **mood** and **interests**.
         """
     )
-    
-    with gr.Row():
-        
-        query = gr.Textbox(
-            label="Search Query",
-            placeholder="Enter a keyword or phrase related to the book you are looking for..."
-        )
-        category = gr.Dropdown(
-            label="Category",
-            choices=categories,
-            value="All"
-        )
-        tone = gr.Dropdown(
-            label="Tone",
-            choices=tone,
-            value="All"
-        )
-        submit_button = gr.Button("Get Recommendations")
-        
 
-    gr.Markdown("## Recommendations")
+    with gr.Group(): # Grouping input elements for visual coherence
+        with gr.Column():
+            query = gr.Textbox(
+                label="What are you looking for?",
+                placeholder="e.g., 'a thrilling mystery with a strong female lead', 'lighthearted fantasy about dragons', 'historical fiction set in ancient Rome'",
+                lines=2, # Allow for multi-line input
+                interactive=True,
+                scale=3 # Give more horizontal space to the query
+            )
+
+            with gr.Row(scale=1): # Row for dropdowns
+                category = gr.Dropdown(
+                    label="Genre", # Renamed label for better clarity
+                    choices=categories,
+                    value="All",
+                    interactive=True
+                )
+                tone = gr.Dropdown(
+                    label="Desired Tone", # Renamed label
+                    choices=tone,
+                    value="All",
+                    interactive=True
+                )
+        
+        submit_button = gr.Button(
+            "✨ Get Personalized Recommendations ✨", 
+            variant="primary", # Make the button more prominent
+            size="lg" # Larger button size
+        )
+
+    gr.Markdown("---") # Horizontal line for separation
+    gr.Markdown("## Your Book Recommendations")
+
     recommendations = gr.Gallery(
-        label="Recommended Books",
+        label="Recommended Books", # Added a hint
         show_label=True,
         elem_id="gallery",
-        columns=8,
+        columns=5, # Reduced columns for larger, more visible covers
         rows=2,
-        object_fit="cover",
-        height="auto"
+        object_fit="contain", # 'contain' or 'scale-down' often works better for book covers
+        height="auto", # Let Gradio handle height based on content
+        allow_preview=True, # Allow clicking on images for a larger view
+        
     )
     
+    # Clearer loading message
+    loading_text = gr.Markdown("Fetching recommendations, please wait...", visible=False)
+
     submit_button.click(
-        recommend_books,
+        fn=lambda: gr.update(visible=True), # Show loading text
+        inputs=None,
+        outputs=loading_text,
+        queue=False # Don't queue this immediate update
+    ).then(
+        fn=recommend_books,
         inputs=[query, category, tone],
         outputs=recommendations
+    ).then(
+        fn=lambda: gr.update(visible=False), # Hide loading text
+        inputs=None,
+        outputs=loading_text,
+        queue=False
     )
     
 if __name__ == "__main__":

@@ -75,7 +75,7 @@ def get_recommendations(title, cosine_sim_matrix=cosine_sim, df=df, indices=indi
 
 # Example usage:
 # You can change 'Gilead' to any other book title present in your 'cleaned_books.csv' file.
-example_book_title = 'Gilead'
+example_book_title = 'Harry potter'
 recommendations = get_recommendations(example_book_title)
 
 print(f"Recommendations for '{example_book_title}':")
