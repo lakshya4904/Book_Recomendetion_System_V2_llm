@@ -1,0 +1,11 @@
+pandas
+numpy
+gradio
+langchain
+langchain-community
+langchain-openai
+langchain-huggingface
+langchain-chroma
+chromadb
+sentence-transformers
+python-dotenv
