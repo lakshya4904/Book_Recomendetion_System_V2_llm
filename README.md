@@ -41,7 +41,6 @@ This project is an interactive Book Recommendation System that leverages semanti
      ```bash
      pip install -r requirements.txt
      ```
-     (You may need to create this file based on imports: pandas, numpy, gradio, langchain, chromadb, sentence-transformers, python-dotenv, etc.)
 2. **Prepare Data:**
    - Ensure `books_with_emotions.csv` and `tagged_description.txt` are present in the project directory.
 3. **Run the App:**
